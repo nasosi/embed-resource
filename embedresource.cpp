@@ -1,9 +1,6 @@
-#include <boost/filesystem.hpp>
-#include <boost/filesystem/fstream.hpp>
 #include <iostream>
-
-using namespace std;
-using namespace boost::filesystem;
+#include <filesystem>
+#include <fstream>
 
 int main(int argc, char** argv)
 {
@@ -14,37 +11,38 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     }
 
-    path dst{argv[1]};
-    path src{argv[2]};
+    std::filesystem::path dst{argv[1]};
+	std::filesystem::path src{argv[2]};
 
-    string sym = src.filename().string();
-    replace(sym.begin(), sym.end(), '.', '_');
-    replace(sym.begin(), sym.end(), '-', '_');
+	std::string sym = src.filename().string();
+	std::replace(sym.begin(), sym.end(), '.', '_');
+	std::replace(sym.begin(), sym.end(), '-', '_');
 
-    create_directories(dst.parent_path());
+	std::filesystem::create_directories(dst.parent_path());
 
-    boost::filesystem::ofstream ofs{dst};
+    std::ofstream ofs{dst};
 
-    boost::filesystem::ifstream ifs{src};
+    std::ifstream ifs{src};
 
-    ofs << "#include <stdlib.h>" << endl;
-    ofs << "const char _resource_" << sym << "[] = {" << endl;
+    ofs << "#include <stdlib.h>" << std::endl;
+    ofs << "const char _resource_" << sym << "[] = {" << std::endl;
 
     size_t lineCount = 0;
     while (!ifs.eof())
     {
         char c;
         ifs.get(c);
-        ofs << "0x" << hex << (c&0xff) << ", ";
+        ofs << "0x" << std::hex << (c&0xff) << ", ";
         if (++lineCount == 10) {
-            ofs << endl;
+            ofs << std::endl;
             lineCount = 0;
         }
     }
 
 
-    ofs << "};" << endl;
+    ofs << "};" << std::endl;
     ofs << "const size_t _resource_" << sym << "_len = sizeof(_resource_" << sym << ");";
 
     return EXIT_SUCCESS;
 }
+
